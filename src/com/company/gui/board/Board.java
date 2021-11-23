@@ -1,4 +1,4 @@
-package com.company.board;
+package com.company.gui.board;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,17 +25,17 @@ public class Board extends JPanel {
 
         Graphics2D g2d = (Graphics2D) g;
 
-        StringBuilder individuals = new StringBuilder(getString());
-        individuals.deleteCharAt(0);
-        individuals.deleteCharAt(individuals.lastIndexOf("]"));
-        String[] splitedIndividuals = new String(individuals).split(",");
+        StringBuilder humans = new StringBuilder(getString());
+        humans.deleteCharAt(0);
+        humans.deleteCharAt(humans.lastIndexOf("]"));
+        String[] splitedHumans = new String(humans).split(",");
 
         StringBuilder ills = new StringBuilder();
         StringBuilder healthy = new StringBuilder();
 
-        for (String splitedIndividual : splitedIndividuals) {
-            String[] strings = splitedIndividual.trim().split("-");
-            if (strings[0].trim().equals("haveSymptoms") || strings[0].trim().equals("haveNotSymptoms")) {
+        for (String splitedHuman : splitedHumans) {
+            String[] strings = splitedHuman.trim().split("-");
+            if (strings[0].trim().equals("haveSymptoms") || strings[0].trim().equals("haveNoSymptoms")) {
                 ills.append(strings[1]);
                 ills.append("-");
             } else {

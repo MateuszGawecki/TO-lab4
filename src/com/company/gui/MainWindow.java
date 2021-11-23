@@ -1,6 +1,6 @@
 package com.company.gui;
 
-import com.company.board.Board;
+import com.company.gui.board.Board;
 import com.company.controller.Controller;
 import com.company.generator.GeneratePopulation;
 import com.company.human.Human;
@@ -13,11 +13,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLOutput;
+import java.util.ConcurrentModificationException;
 import java.util.Map;
 import java.util.Random;
 
 public class MainWindow extends JFrame {
-    public JButton saveBut, undoBut, redoBut;
+    public JButton saveBut, backBut;
     Caretaker caretaker = new Caretaker();
     Originator originator = new Originator();
     int savedPopulations = 0, counterPopulation = 0;
@@ -32,10 +34,18 @@ public class MainWindow extends JFrame {
 
     private Population population;
 
-    public MainWindow(){
+    public MainWindow(int width, int height, int numberOfHumans, boolean option){
         Random random = new Random();
-        Room room = new Room(40, 30);
-        setPopulation(GeneratePopulation.generateNotResistPopulation(500, room));
+        Room room = new Room(width, height);
+
+        if(option){
+            setPopulation(GeneratePopulation.generateNotResistPopulation(numberOfHumans, room));
+        }
+        else{
+            setPopulation((GeneratePopulation.generateResistPopulation(numberOfHumans,room)));
+        }
+
+
         Controller controller = new Controller();
 
 
@@ -49,17 +59,14 @@ public class MainWindow extends JFrame {
         chart.setBackground(Color.GRAY);
 
         ButtonListener saveListener = new ButtonListener();
-        ButtonListener redoListener = new ButtonListener();
-        ButtonListener undoListener = new ButtonListener();
+        ButtonListener backListener = new ButtonListener();
 
 
         saveBut = new JButton("Save");
-        undoBut = new JButton("Undo");
-        redoBut = new JButton("Redo");
+        backBut = new JButton("Back");
 
         saveBut.addActionListener(saveListener);
-        redoBut.addActionListener(redoListener);
-        undoBut.addActionListener(undoListener);
+        backBut.addActionListener(backListener);
 
 //        saveBut.addActionListener(e -> {
 //            if(e.getSource() == saveBut) {
@@ -105,8 +112,7 @@ public class MainWindow extends JFrame {
 
         JPanel jp = new JPanel();
         jp.add(saveBut);
-        jp.add(undoBut);
-        jp.add(redoBut);
+        jp.add(backBut);
 
         this.add(chart , BorderLayout.WEST);
         this.add(jp, BorderLayout.EAST);
@@ -124,20 +130,25 @@ public class MainWindow extends JFrame {
                 this.revalidate();
                 this.repaint();
 
-                for (int j = 0; j < population.getInfected().size(); j++) {
-                    Human individual = population.getInfected().get(j);
-                    individual.clearParams(population);
-                    individual.getDistances(population.getNotInfected());
-                    individual.getTimes(population.getNotInfected());
+                try{
+                    for (int j = 0; j < population.getInfected().size(); j++) {
+                        Human individual = population.getInfected().get(j);
+                        individual.clearParams(population);
+                        individual.getDistances(population.getNotInfected());
+                        individual.getTimes(population.getNotInfected());
 
-                    Map<String, Integer> times = individual.getIndividualParams().getTimes();
+                        Map<String, Integer> times = individual.getIndividualParams().getTimes();
 
-                    for (String key : times.keySet()) {
-                        if (times.get(key) >= 75) {
-                            population.getIndividual(key).handle(individual);
+                        for (String key : times.keySet()) {
+                            if (times.get(key) >= 75) {
+                                population.getIndividual(key).handle(individual);
+                            }
                         }
                     }
+                }catch(NullPointerException e){
+                    //System.out.println("Null");
                 }
+
                 population.getPopulation().forEach(individual1 -> individual1.generatePosition(room, random));
                 population.deleteIfExited();
                 if (counter % 7 == 0) {
@@ -145,8 +156,6 @@ public class MainWindow extends JFrame {
                 }
             }
 
-            System.out.println(counter);
-            System.out.println("Infected: " + population.getInfected().size() + " " + "Not infected: " + population.getNotInfected().size());
             if (counter == 10000) {
                 break;
             }
@@ -155,51 +164,39 @@ public class MainWindow extends JFrame {
             }
             counter++;
         }
-        population.getPopulation().forEach(System.out::println);
-        System.out.println("Infected: " + population.getInfected().size() + " " + "Not infected: " + population.getNotInfected().size());
     }
 
     class ButtonListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if(e.getSource() == saveBut) {
-                Population currentPopulation = getPopulation().getCopy();
+            try {
+                if(e.getSource() == saveBut) {
+                    Population currentPopulation = getPopulation().getCopy();
 
-                originator.set(currentPopulation);
-                caretaker.addMemento(originator.storeInMemento());
+                    originator.set(currentPopulation);
+                    caretaker.addMemento(originator.storeInMemento());
 
-                savedPopulations++;
-                counterPopulation++;
+                    savedPopulations++;
+                    counterPopulation++;
 
-                undoBut.setEnabled(true);
-            }
-            else{
-                if(e.getSource() == undoBut) {
-                    if(counterPopulation>=1) {
-                        counterPopulation--;
-                        setPopulation(originator.restoreFromMemento(caretaker.getMemento(counterPopulation)));
-                        redoBut.setEnabled(true);
-                    }
-                    else {
-                        undoBut.setEnabled(false);
-                    }
+                    backBut.setEnabled(true);
                 }
                 else{
-                    if(e.getSource()==redoBut) {
-                        if((savedPopulations -1) > counterPopulation) {
-                            counterPopulation++;
-
+                    if(e.getSource() == backBut) {
+                        if(counterPopulation>=1) {
+                            counterPopulation--;
                             setPopulation(originator.restoreFromMemento(caretaker.getMemento(counterPopulation)));
-
-                            undoBut.setEnabled(true);
                         }
                         else {
-                            redoBut.setEnabled(false);
+                            backBut.setEnabled(false);
                         }
                     }
                 }
+            }catch (ConcurrentModificationException e1){
+                //System.out.println("Concurr");
             }
         }
     }
 }
+
