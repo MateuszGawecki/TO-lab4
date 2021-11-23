@@ -1,5 +1,8 @@
 package com.company.human;
 
+import com.company.population.Population;
+import com.company.room.Room;
+import com.company.states.HaveNoSymptoms;
 import com.company.states.IState;
 import com.company.vector.IVector;
 import com.company.vector.Vector2D;
@@ -96,7 +99,7 @@ public class Human {
     }
 
     public void handle(final Human individual) {
-        if (individual.getState().equals(new HaveNotSymptoms())) {
+        if (individual.getState().equals(new HaveNoSymptoms())) {
             if (new Random().nextInt(PROBABILITY_OF_INFECT) == 0) {
                 this.handle();
             }
