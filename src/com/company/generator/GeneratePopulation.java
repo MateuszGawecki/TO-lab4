@@ -21,12 +21,12 @@ public class GeneratePopulation {
     public static Population generateNotResistPopulation(final int numerous, final Room room) {
         List<Human> individuals = new ArrayList<>();
         for (int i = 0; i < numerous; i++) {
-            individuals.add(getNotResistIndividual(room));
+            individuals.add(getNotResistHuman(room));
         }
         return Population.of(individuals);
     }
 
-    public static Human getNotResistIndividual(final Room room) {
+    public static Human getNotResistHuman(final Room room) {
         IState iState;
         if (random.nextInt(PROBABILITY_OF_ILL) != 0) {
             iState = new Healthy();
@@ -41,13 +41,20 @@ public class GeneratePopulation {
 
     public static Population generateResistPopulation(final int numerous, final Room room) {
         List<Human> individuals = new ArrayList<>();
+        Random random = new Random();
         for (int i = 0; i < numerous; i++) {
-            individuals.add(generateResistIndividual(room));
+
+            if(random.nextInt(PROBABILITY_OF_BEING_RESIST) < 2){
+                individuals.add(generateResistHuman(room));
+            }
+            else{
+                individuals.add(getNotResistHuman(room));
+            }
         }
         return Population.of(individuals);
     }
 
-    public static Human generateResistIndividual(final Room room) {
+    public static Human generateResistHuman(final Room room) {
         IState iState;
         if (random.nextInt(PROBABILITY_OF_RESIST) == 0) {
             iState = new Resistant();

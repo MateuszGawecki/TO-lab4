@@ -13,7 +13,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLOutput;
 import java.util.ConcurrentModificationException;
 import java.util.Map;
 import java.util.Random;
@@ -152,7 +151,7 @@ public class MainWindow extends JFrame {
                 population.getPopulation().forEach(individual1 -> individual1.generatePosition(room, random));
                 population.deleteIfExited();
                 if (counter % 7 == 0) {
-                    population.addIndividual(GeneratePopulation.getNotResistIndividual(room));
+                    population.addIndividual(GeneratePopulation.getNotResistHuman(room));
                 }
             }
 

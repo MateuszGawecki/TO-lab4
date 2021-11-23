@@ -3,6 +3,7 @@ package com.company.usefulConstants;
 public class Constants {
     public static final int PROBABILITY_OF_RECOVER = 2;
     public static final int PROBABILITY_OF_ILL = 10;
+    public static final int PROBABILITY_OF_BEING_RESIST = 10;
     public static final int PROBABILITY_OF_INFECT = 2;
     public static final int PROBABILITY_OF_RESIST = 2;
     public static final int PROBABILITY_OF_SYMPTOMS = 2;
