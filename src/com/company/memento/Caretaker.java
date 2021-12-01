@@ -7,5 +7,9 @@ public class Caretaker {
 
     public void addMemento(Memento memento){savedPopulations.add(memento);}
 
-    public Memento getMemento(int idx){return savedPopulations.get(idx);}
+    public Memento getMemento(int idx){
+        Memento memento = savedPopulations.get(idx);
+        savedPopulations.remove(idx);
+        return memento;
+    }
 }

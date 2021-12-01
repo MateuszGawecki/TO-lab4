@@ -146,6 +146,8 @@ public class MainWindow extends JFrame {
                     }
                 }catch(NullPointerException e){
                     //System.out.println("Null");
+                }catch(IndexOutOfBoundsException e1){
+                    //System.out.println("index");
                 }
 
                 population.getPopulation().forEach(individual1 -> individual1.generatePosition(room, random));

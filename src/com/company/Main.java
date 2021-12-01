@@ -13,7 +13,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Podaj dlugosc pokoju: ");
         width=scanner.nextInt();
-        System.out.println("Podaj dlugosc szerokosc: ");
+        System.out.println("Podaj szerokosc pokoju: ");
         height=scanner.nextInt();
         System.out.println("Podaj liczbe osobnikow: ");
         numberOfHumans=scanner.nextInt();
